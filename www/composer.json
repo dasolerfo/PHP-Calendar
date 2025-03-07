@@ -1,0 +1,22 @@
+{
+    "name": "salle/ac1",
+    "description": "It's ac1",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "DB\\": "db/",
+            "Model\\": "model/",
+            "API\\": "api/",
+            "App\\": "public/",
+            "Salle\\Ac1\\": "public/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daniel Soler"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "7.9"
+    }
+}
