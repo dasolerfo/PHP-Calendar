@@ -8,10 +8,19 @@ class CalendarParser {
 
     public array $calendarDates = [];
 
-    public function __construct() {
+    public function __construct($offset, $lastDay) {
+        
+        $calendarDay= $lastDay - ($offset + 1);
+        $active = false;
+
         for ($i = 0; $i < 6; $i++) {
             for ($j = 0; $j < 7; $j++) {
-                $this->calendarDates[$i][$j] = new Date(0);
+                $this->calendarDates[$i][$j] = new Date($calendarDay, $active);
+                $calendarDay++;
+                if ($calendarDay > $lastDay){
+                    $calendarDay = 1;
+                    $active = !$active;
+                }
             }
         }
     }
@@ -19,8 +28,9 @@ class CalendarParser {
     public static function DateParser(mixed $json, int $month, int $year) {
         $firstday = sprintf("%04d-%02d-01", $year, $month);
         $columna = date('w', strtotime($firstday)) - 1;
+        $lastPreviousDay = date('t', strtotime("$year-$month-01 -1 day"));
 
-        $calendar = new self();
+        $calendar = new self($columna, $lastPreviousDay);
 
         foreach ($json["response"]["holidays"] as $holiday) {
             $parsedHoliday = $calendar->HolidayParser($holiday);

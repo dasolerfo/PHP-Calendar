@@ -9,9 +9,9 @@ class Date {
     public bool $active;
     public array $holidays;
 
-    public function __construct(int $number) {
+    public function __construct(int $number, bool $active = false) {
         $this->number = $number;
-        $this->active = false;
+        $this->active = $active;
         $this->holidays = [];
     }
 }
