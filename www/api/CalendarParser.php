@@ -12,9 +12,7 @@ class CalendarParser {
         
         $calendarDay = $lastDay - ($offset);
         $active = false;
-
         if ($offset == 0){
-            $iteracions = 5;
             $calendarDay = 1;
             $active = !$active;
             $lastDay = date('t', strtotime("$year-$month-01"));
@@ -22,7 +20,6 @@ class CalendarParser {
 
 
         for ($i = 0; $i < 6; $i++) {
-            echo "<br>";
             if ((!$active && $calendarDay < 7)) continue;
 
             for ($j = 0; $j < 7; $j++) {
