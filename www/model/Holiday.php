@@ -8,7 +8,7 @@ class Holiday {
     public $type;
     public $date;
 
-    public function __construct( $name = "", $description = "", $type = "", $date) {
+    public function __construct( $date, $name = "", $description = "", $type = "", ) {
         $this->name = $name;
         $this->description = $description;
         $this->type = $type;

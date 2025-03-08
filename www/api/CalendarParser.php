@@ -8,31 +8,46 @@ class CalendarParser {
 
     public array $calendarDates = [];
 
-    public function __construct($offset, $lastDay) {
+    public function __construct($offset, $lastDay, $year, $month) {
         
-        $calendarDay= $lastDay - ($offset + 1);
+        $calendarDay = $lastDay - ($offset);
         $active = false;
 
+        if ($offset == 0){
+            $iteracions = 5;
+            $calendarDay = 1;
+            $active = !$active;
+            $lastDay = date('t', strtotime("$year-$month-01"));
+        }
+
+
         for ($i = 0; $i < 6; $i++) {
+            echo "<br>";
+            if ((!$active && $calendarDay < 7)) continue;
+
             for ($j = 0; $j < 7; $j++) {
+                echo $calendarDay . " ";
                 $this->calendarDates[$i][$j] = new Date($calendarDay, $active);
                 $calendarDay++;
                 if ($calendarDay > $lastDay){
                     $calendarDay = 1;
                     $active = !$active;
+                    $lastDay = date('t', strtotime("$year-$month-01"));
                 }
             }
         }
     }
 
     public static function DateParser(mixed $json, int $month, int $year) {
+
         $firstday = sprintf("%04d-%02d-01", $year, $month);
         $columna = date('w', strtotime($firstday)) - 1;
         $lastPreviousDay = date('t', strtotime("$year-$month-01 -1 day"));
 
-        $calendar = new self($columna, $lastPreviousDay);
+        $calendar = new self($columna, $lastPreviousDay, $year, $month);
 
-        foreach ($json["response"]["holidays"] as $holiday) {
+
+        foreach ($json['response']['holidays'] as $holiday) { 
             $parsedHoliday = $calendar->HolidayParser($holiday);
             $day = (int) date('d', strtotime($holiday["date"]["iso"]));
 
@@ -47,10 +62,10 @@ class CalendarParser {
 
     private function HolidayParser(array $jsonHoliday): Holiday {
         return new Holiday(
+            $jsonHoliday["date"]["iso"],
             $jsonHoliday["name"],
             $jsonHoliday["description"] ?? '',
-            $jsonHoliday["type"],
-            $jsonHoliday["date"]["iso"]
+            $jsonHoliday["type"]
         );
     }
 }

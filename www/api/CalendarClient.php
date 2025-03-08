@@ -15,7 +15,7 @@ class CalendarClient {
         $client = new Client();
         $response = $client->request('GET', CalendarClient::REQUEST_URL . '&month='. $month);
         //$this->month = $month;
-        return json_decode($response->getBody());
+        return json_decode($response->getBody(), true);
     }
 
 }
