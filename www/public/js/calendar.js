@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
         currentMonth--;
         if (currentMonth < 1) {
             currentMonth = 12;
-            currentYear--;
         }
         updateURL();
     });
@@ -27,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
         currentMonth++;
         if (currentMonth > 12) {
             currentMonth = 1;
-            currentYear++;
         }
         updateURL();
     });

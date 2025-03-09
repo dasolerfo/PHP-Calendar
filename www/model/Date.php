@@ -9,7 +9,7 @@ class Date {
     public bool $active;
     public array $holidays;
 
-    public function __construct(int $number, bool $active = false) {
+    public function __construct(int $number, bool $active) {
         $this->number = $number;
         $this->active = $active;
         $this->holidays = [];

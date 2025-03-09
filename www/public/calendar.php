@@ -4,32 +4,39 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use API\CalendarClient;
 use API\CalendarParser;
-    
+use DB\MySQLDateRepository;
+
     const MESOS_CAT = ["Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre" ];
 
-    if (!isset($_SESSION["logged"]) || $_SESSION["logged"] == false ) {
+  //  if (!isset($_SESSION["logged"]) && $_SESSION["logged"] == false ) {
 
-        session_start();
-        header("Location: /login", true);
-        exit();
+//        session_start();
+  //      header("Location: /login", true);
+    //    exit();
 
 
-    } else {
+    //} else {
 
-        if ($_SERVER["REQUEST_METHOD"] == "GET"){
-
-            $month = $_GET['month'] ?? '';
-            $county = $_GET['country'] ?? '';
+            $month = $_GET['month'] ?? date('m');
+            $country = $_GET['country'] ?? 'ES';
             $day = $_GET['day'] ?? '';
 
-        } else {
+            $dateRepo = new MySQLDateRepository();
+            $holidays = $dateRepo->findHolidays($month, $country);
+            if (!$holidays){
 
-            $month = date('m');
-            $year = date('Y');
-            $country = 'ES';
-        
-        }
-    }
+                $holidays = CalendarClient::getCalendarMonth($month, $country);
+                $dateRepo->saveHolidays($holidays, $country, $month, MESOS_CAT[$month -1]);
+                $calendar = CalendarParser::DateParserJson($holidays, $month, 2025);
+
+            } else {
+                $calendar = CalendarParser::DateParserSQL($holidays, $month, 2025);
+            }
+
+
+
+
+   // }
 
 
 
@@ -105,6 +112,11 @@ use API\CalendarParser;
             cursor: not-allowed; /* Mantenir el cursor desactivat */
         }
 
+        .holiday:hover {
+            background:rgb(88, 250, 88);
+            cursor: pointer; /* Mantenir el cursor desactivat */
+        }
+
         .info-panel {
             width: 250px;
             background: #fff;
@@ -117,6 +129,12 @@ use API\CalendarParser;
             background: #d3d3d3; 
             color: #a9a9a9; 
             cursor: not-allowed;
+        }
+
+        .holiday {
+            background:rgb(162, 254, 164);
+            /*color:rgb(138, 255, 117);*/
+            color: white;
         }
         select {
             width: 100%;
@@ -144,7 +162,7 @@ use API\CalendarParser;
         <div class="calendar">
             <div class="calendar-header">
                 <span>&lt;</span>
-                <span>Març 2025</span>
+                <span><?= MESOS_CAT[$month - 1] . " 2025" ?></span>
                 <span>&gt;</span>
             </div>
             <div class="days">
@@ -155,10 +173,31 @@ use API\CalendarParser;
                 <div class="weekday">Dvd</div>
                 <div class="weekday">Dss</div>
                 <div class="weekday">Dmg</div>
+
+                <?
+                $printado = "";
+                for ($i = 0; $i < 6; $i++) {
+                    for ($j = 0; $j < 7; $j++) {
+                        if (isset($calendar[$i][$j])){
+                            if($calendar[$i][$j]->active == true){
+                                $printado .= "<div class=\"day " . (empty($calendar[$i][$j]->holidays) ? "" : "holiday") . "\">". $calendar[$i][$j]->number . "</div>";
+                            } else { 
+                                $printado .= "<div class=\"day disabled\">". $calendar[$i][$j]->number . "</div>";
+                            }
+
+                        }
+                    }
+                }
+                echo $printado 
+
+                ?>
+
+                <!--
+
                 <div class="day">1</div>
                 <div class="day">2</div>
                 <div class="day disabled">3</div>
-                <div class="day">4</div>
+                <div class="day holiday">4</div>
                 <div class="day">5</div>
                 <div class="day">6</div>
                 <div class="day">7</div>
@@ -185,16 +224,16 @@ use API\CalendarParser;
                 <div class="day">28</div>
                 <div class="day">29</div>
                 <div class="day">30</div>
-                <div class="day">31</div>
+                <div class="day">31</div> -->
             </div>
         </div>
         <div class="info-panel">
             <label for="country"><h3>Selecciona un país:</h3></label>
             <select id="country">
-                <option value="espanya">Espanya</option>
-                <option value="franca">França</option>
-                <option value="italia">Itàlia</option>
-                <option value="alemanya">Alemanya</option>
+                <option value="ES" <?= $country == "ES" ? "selected" : "" ?>>Espanya</option>
+                <option value="FR" <?= $country == "FR" ? "selected" : "" ?>>França</option>
+                <option value="IT" <?= $country == "IT" ? "selected" : "" ?>>Itàlia</option>
+                <option value="DE" <?= $country == "DE" ? "selected" : "" ?>>Alemanya</option>
             </select>
             <h3>Festes Nacionals</h3>
             <p id="holidays">Selecciona un país per veure les seves festes.</p>
