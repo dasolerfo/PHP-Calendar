@@ -1,4 +1,6 @@
+
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script carregat correctament");
     const countrySelect = document.getElementById("country");
     const prevMonthBtn = document.querySelector(".calendar-header span:first-child");
     const nextMonthBtn = document.querySelector(".calendar-header span:last-child");
