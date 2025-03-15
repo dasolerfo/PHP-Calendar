@@ -8,6 +8,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $errorsEmail = '';
 $errorsPass = [];
 
+session_start();
+$_SESSION["logged"] = false;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -32,12 +35,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $userRepo = new MySQLUserRepository();
         if ($userRepo-> validate($email, $password)){
-            session_start();
-
-            echo "<p class='success-message'>✅ Registre completat amb èxit!</p>";
+            //echo "<p class='success-message'>✅ Registre completat amb èxit!</p>";
             
             $_SESSION['email'] = $email;
-            $_SESSION['password'] = $password;
+            $_SESSION['logged'] = true;
+            $_SESSION['password'] = $password;        
+
+            //echo "<p class='success-message'>✅ Registre completat amb èxit!</p>";
+            header("Location: ./calendar", true);
+            exit();
 
             exit();
         } else {
@@ -55,83 +61,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+       
+       body {
+           font-family: 'Poppins', sans-serif;
+           background: linear-gradient(to right,rgb(154, 157, 255),rgb(200, 196, 250));
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+       }
 
-        .register-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
-            text-align: center;
-        }
+       .register-container {
+           background: white;
+           padding: 20px;
+           border-radius: 10px;
+           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+           width: 350px;
+           text-align: center;
+       }
 
-        h2 {
-            color: #333;
-        }
+       h2 {
+           color:rgb(74, 71, 255);
+       }
 
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
+       .input-group {
+           margin-bottom: 15px;
+           text-align: left;
+       }
 
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+       label {
+            color:rgb(74, 71, 255) ;
+           display: block;
+           font-weight: bold;
+           margin-bottom: 5px;
+       }
 
-        input {
-            box-sizing: border-box;
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+       input {
+           box-sizing: border-box;
+           width: 100%;
+           padding: 10px;
+           border: 1px solid #ccc;
+           border-radius: 5px;
+           font-size: 16px;
+       }
 
-        .btn {
-            background:rgb(158, 1, 255);
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.4s ease;
-        }
+       .btn {
+           font-family: 'Poppins', sans-serif;
+           background:rgb(179, 185, 255);
+           color: white;
+           border: none;
+           padding: 10px;
+           width: 100%;
+           font-size: 16px;
+           border-radius: 5px;
+           cursor: pointer;
+           transition: background 0.4s ease;
+       }
 
-        .btn:hover {
-            background:rgb(119, 0, 179);
-        }
+       .btn:hover {
+           background:rgb(131, 117, 255);
+       }
 
-        .error-message {
-            background: #ffebee;
-            color: #d32f2f;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 14px;
-            font-size: 14px;
-            text-align: left;
-        }
+       .error-message {
+           background: #ffebee;
+           color: #d32f2f;
+           padding: 10px;
+           border-radius: 5px;
+           margin-top: 14px;
+           font-size: 14px;
+           text-align: left;
+       }
 
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 16px;
-        }
+       .success-message {
+           background: #e8f5e9;
+           color: #2e7d32;
+           padding: 10px;
+           border-radius: 5px;
+           margin-top: 10px;
+           font-size: 16px;
+       }
 
         a{
             display: inline-block;

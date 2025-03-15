@@ -10,6 +10,9 @@ use Model\User;
 $errorsEmail = '';
 $errorsPass = [];
 
+
+session_start();
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -38,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($userRepo->find($email) == null) {
             $userRepo->save($user);
 
-            session_start();
             $_SESSION['email'] = $email;
         
 
@@ -64,9 +66,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registre</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+       
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right,rgb(154, 157, 255),rgb(200, 196, 250));
             display: flex;
             justify-content: center;
             align-items: center;
@@ -84,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         h2 {
-            color: #333;
+            color:rgb(74, 71, 255);
         }
 
         .input-group {
@@ -93,6 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         label {
+             color:rgb(74, 71, 255) ;
             display: block;
             font-weight: bold;
             margin-bottom: 5px;
@@ -108,7 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .btn {
-            background:rgb(158, 1, 255);
+            font-family: 'Poppins', sans-serif;
+            background:rgb(179, 185, 255);
             color: white;
             border: none;
             padding: 10px;
@@ -120,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .btn:hover {
-            background:rgb(119, 0, 179);
+            background:rgb(131, 117, 255);
         }
 
         .error-message {
@@ -140,6 +146,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 5px;
             margin-top: 10px;
             font-size: 16px;
+        }
+        a{
+            display: inline-block;
+            text-decoration: none;
+            box-sizing: border-box;
+            color:rgb(124, 124, 124);
+            margin-top: 24px;
+            font-size: small;
+
         }
     </style>
 </head>
@@ -171,6 +186,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <button type="submit" class="btn">Registrar</button>
+        <a href="/login" > Ja tens un compte? </a>
+
     </form>
 </div>
 

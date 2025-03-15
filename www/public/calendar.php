@@ -7,39 +7,41 @@ use API\CalendarParser;
 use DB\MySQLDateRepository;
 
     const MESOS_CAT = ["Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre" ];
+    
+   session_start();
+   if (!isset($_SESSION["logged"])) {
+       header("Location: /login", true);
+        exit();
 
-  //  if (!isset($_SESSION["logged"]) && $_SESSION["logged"] == false ) {
-
-//        session_start();
-  //      header("Location: /login", true);
-    //    exit();
-
-
-    //} else {
+    } else {        
+            if ($_SESSION["logged"] == false){
+                header("Location: /login", true);
+                exit();
+            }
 
             $month = $_GET['month'] ?? date('m');
             $country = $_GET['country'] ?? 'ES';
             $day = $_GET['day'] ?? '';
+            $days = [];
 
             $dateRepo = new MySQLDateRepository();
             $holidays = $dateRepo->findHolidays($month, $country);
+
             if (!$holidays){
 
                 $holidays = CalendarClient::getCalendarMonth($month, $country);
-                $dateRepo->saveHolidays($holidays, $country, $month, MESOS_CAT[$month -1]);
+                $dateRepo->saveHolidays($holidays, $country, $month, MESOS_CAT[$month - 1]);
                 $calendar = CalendarParser::DateParserJson($holidays, $month, 2025);
 
             } else {
                 $calendar = CalendarParser::DateParserSQL($holidays, $month, 2025);
             }
 
+            if ($day != ''){
+               $days = $dateRepo->findHolidaysDay($month, $country, $day);
 
-
-
-   // }
-
-
-
+            }
+   }
 ?>
 
 <!DOCTYPE html>
@@ -114,6 +116,10 @@ use DB\MySQLDateRepository;
             cursor: not-allowed; /* Mantenir el cursor desactivat */
         }
 
+        .seleccionable{
+            cursor:  pointer;
+        }
+
         .holiday:hover {
             background:rgb(88, 250, 88);
             cursor: pointer; /* Mantenir el cursor desactivat */
@@ -155,7 +161,38 @@ use DB\MySQLDateRepository;
             border-color:rgb(86, 71, 255);
         }
         h3 {
+            font-size: medium;
+            margin-top: 0px;
+            margin-bottom: 7px;
             color:rgb(74, 71, 255);
+        }
+
+        .holiday-list {
+            margin-top: 2px;
+            margin-bottom: 0px;
+            list-style: none;
+            padding: 0;
+        }
+        .holiday-item {
+            background:rgb(119, 117, 255);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+            text-align: center;
+            font-size: medium;
+            font-weight: 550;
+        }
+
+        .holiday-description {
+            background:rgb(160, 159, 249);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+            text-align: center;
+            font-size: small;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -163,9 +200,9 @@ use DB\MySQLDateRepository;
     <div class="container">
         <div class="calendar">
             <div class="calendar-header">
-                <span>&lt;</span>
+                <span class="seleccionable">&lt;</span>
                 <span><?= MESOS_CAT[$month - 1] . " 2025" ?></span>
-                <span>&gt;</span>
+                <span class="seleccionable">&gt;</span>
             </div>
             <div class="days">
                 <div class="weekday">Dll</div>
@@ -203,8 +240,27 @@ use DB\MySQLDateRepository;
                 <option value="IT" <?= $country == "IT" ? "selected" : "" ?>>Itàlia</option>
                 <option value="DE" <?= $country == "DE" ? "selected" : "" ?>>Alemanya</option>
             </select>
-            <h3>Festes Nacionals</h3>
-            <p id="holidays">Selecciona un país per veure les seves festes.</p>
+            <h3>Festes Nacionals: 
+            <?php
+                if ($day!= '' && $month != '') {echo $day . "/" . $month;}
+            ?> 
+
+            </h3>
+
+            <?php 
+            if (empty($days))
+                echo "<p id=\"holidays\">Selecciona un país i dia verd per veure les seves festes.</p>"; ?>
+            <ul class="holiday-list">
+
+                <?php 
+                foreach ($days as $dia){
+                    echo "<li class=\"holiday-item\">". $dia["holiday_name"] . "</li>" ;
+                    echo "<li class=\"holiday-description\">". $dia["holiday_description"] . "</li>" ;
+                }
+                
+                ?>
+               
+            </ul>
         </div>
     </div>
 </body>

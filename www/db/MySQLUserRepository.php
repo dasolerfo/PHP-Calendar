@@ -30,7 +30,7 @@ class MySQLUserRepository implements UserRepository {
 
     public function validate($mail, $pass): bool {
         $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE email = ? AND password = ?");
-        echo $mail . $pass;
+       
         $stmt->execute([$mail, $pass]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) {

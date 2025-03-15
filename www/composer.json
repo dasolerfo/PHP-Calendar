@@ -1,6 +1,6 @@
 {
-    "name": "salle/ac1",
-    "description": "It's ac1",
+    "name": "root/www",
+    "description": "Benvinguts a la AC1 :)",
     "type": "project",
     "autoload": {
         "psr-4": {
@@ -11,12 +11,11 @@
             "Salle\\Ac1\\": "public/"
         }
     },
+
     "authors": [
         {
-            "name": "Daniel Soler"
+            "name": "DanielSoler"
         }
     ],
-    "require": {
-        "guzzlehttp/guzzle": "7.9"
-    }
+    "require": {}
 }

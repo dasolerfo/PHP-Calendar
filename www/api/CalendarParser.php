@@ -10,27 +10,34 @@ class CalendarParser {
 
     public function __construct($offset, $lastDay, $year, $month) {
         
-        $calendarDay = $lastDay - ($offset);
+        $calendarDay = $lastDay - ($offset - 1);
+    
         $active = false;
         if ($offset == 0){
             $calendarDay = 1;
-           
+            $active = TRUE;
+            
+
             $lastDay = date('t', strtotime("$year-$month-01"));
         }
 
 
         for ($i = 0; $i < 6; $i++) {
-            if ((!$active && $calendarDay < 7)) continue;
+            if ((!$active && $calendarDay < 7)) {
+                
+                continue;
+            }
 
             for ($j = 0; $j < 7; $j++) {
                 
                 $this->calendarDates[$i][$j] = new Date($calendarDay, $active);
                 $calendarDay++;
                 if ($calendarDay > $lastDay){
-                    if ($active) break;
+
                     $calendarDay = 1;
                     $active = $active == true ? false : true;
                     $lastDay = date('t', strtotime("$year-$month-01"));
+                    if (!$active) break;
                 }
             }
         }
@@ -39,9 +46,8 @@ class CalendarParser {
     public static function DateParserJson(mixed $json, int $month, int $year) {
 
         $firstday = sprintf("%04d-%02d-01", $year, $month);
-        $columna = date('w', strtotime($firstday)) - 2;
+        $columna = date('w', strtotime($firstday)) -1;
         $columna = $columna == -1 ? 6 : $columna;
-
         $lastPreviousDay = date('t', strtotime("$year-$month-01 -1 day"));
 
         $calendar = new self($columna, $lastPreviousDay, $year, $month);
@@ -81,8 +87,11 @@ class CalendarParser {
     public static function DateParserSQL($sqlResult, int $month, int $year) {
 
         $firstday = sprintf("%04d-%02d-01", $year, $month);
-        $columna = date('w', strtotime($firstday)) - 2;
+        
+        $columna = date('w', strtotime($firstday)) - 1;
+        
         $columna = $columna == -1 ? 6 : $columna;
+        
 
         $lastPreviousDay = date('t', strtotime("$year-$month-01 -1 day"));
 
